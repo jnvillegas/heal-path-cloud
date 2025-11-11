@@ -229,6 +229,70 @@ export type Database = {
         }
         Relationships: []
       }
+      prescriptions: {
+        Row: {
+          created_at: string
+          diagnosis: string | null
+          doctor_id: string
+          id: string
+          instructions: string | null
+          medical_record_id: string | null
+          medications: Json
+          patient_id: string
+          status: string
+          updated_at: string
+          valid_until: string
+        }
+        Insert: {
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id: string
+          id?: string
+          instructions?: string | null
+          medical_record_id?: string | null
+          medications: Json
+          patient_id: string
+          status?: string
+          updated_at?: string
+          valid_until: string
+        }
+        Update: {
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id?: string
+          id?: string
+          instructions?: string | null
+          medical_record_id?: string | null
+          medications?: Json
+          patient_id?: string
+          status?: string
+          updated_at?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_medical_record_id_fkey"
+            columns: ["medical_record_id"]
+            isOneToOne: false
+            referencedRelation: "medical_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
