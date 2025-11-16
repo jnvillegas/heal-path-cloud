@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, X, Calendar, Users, FileText, LayoutDashboard } from "lucide-react";
+import { LogOut, Menu, X, Calendar, Users, FileText, LayoutDashboard, Pill } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import { NavLink } from "@/components/NavLink";
@@ -105,6 +105,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <FileText className="inline-block w-4 h-4 mr-2" />
                 Historias Clínicas
               </NavLink>
+              <NavLink
+                to="/prescriptions"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                activeClassName="bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+              >
+                <Pill className="inline-block w-4 h-4 mr-2" />
+                Recetas
+              </NavLink>
             </div>
 
             {/* User Menu */}
@@ -168,6 +176,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               >
                 <FileText className="inline-block w-4 h-4 mr-2" />
                 Historias Clínicas
+              </NavLink>
+              <NavLink
+                to="/prescriptions"
+                className="block px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
+                activeClassName="bg-primary text-primary-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Pill className="inline-block w-4 h-4 mr-2" />
+                Recetas
               </NavLink>
               <div className="pt-4 border-t border-border">
                 <div className="mb-3">
