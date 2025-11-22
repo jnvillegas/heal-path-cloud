@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, X, Calendar, Users, FileText, LayoutDashboard, Pill } from "lucide-react";
+import { LogOut, Menu, X, Calendar, Users, FileText, LayoutDashboard, Pill, TrendingDown } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import { NavLink } from "@/components/NavLink";
@@ -113,6 +113,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Pill className="inline-block w-4 h-4 mr-2" />
                 Recetas
               </NavLink>
+              <NavLink
+                to="/cost-savings"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                activeClassName="bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+              >
+                <TrendingDown className="inline-block w-4 h-4 mr-2" />
+                Ahorro de Costos
+              </NavLink>
             </div>
 
             {/* User Menu */}
@@ -176,6 +184,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               >
                 <FileText className="inline-block w-4 h-4 mr-2" />
                 Historias Clínicas
+              </NavLink>
+              <NavLink
+                to="/cost-savings"
+                className="block px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
+                activeClassName="bg-primary text-primary-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <TrendingDown className="inline-block w-4 h-4 mr-2" />
+                Ahorro de Costos
               </NavLink>
               <NavLink
                 to="/prescriptions"
