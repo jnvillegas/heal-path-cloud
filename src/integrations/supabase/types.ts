@@ -70,6 +70,122 @@ export type Database = {
           },
         ]
       }
+      cost_savings_cases: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          current_medication: Json | null
+          current_monthly_cost: number | null
+          current_projected_cost: number | null
+          current_projected_period_months: number | null
+          diagnosis: string
+          evaluating_doctor_id: string | null
+          id: string
+          initial_medication: Json
+          initial_monthly_cost: number
+          initial_projected_cost: number | null
+          intervention_cost: number
+          intervention_date: string | null
+          intervention_description: string | null
+          intervention_type: string
+          medical_record_id: string | null
+          monthly_savings: number | null
+          observations: string | null
+          patient_id: string
+          prescription_id: string | null
+          projected_period_months: number
+          projected_savings: number | null
+          savings_percentage: number | null
+          status: Database["public"]["Enums"]["cost_savings_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          current_medication?: Json | null
+          current_monthly_cost?: number | null
+          current_projected_cost?: number | null
+          current_projected_period_months?: number | null
+          diagnosis: string
+          evaluating_doctor_id?: string | null
+          id?: string
+          initial_medication: Json
+          initial_monthly_cost: number
+          initial_projected_cost?: number | null
+          intervention_cost?: number
+          intervention_date?: string | null
+          intervention_description?: string | null
+          intervention_type: string
+          medical_record_id?: string | null
+          monthly_savings?: number | null
+          observations?: string | null
+          patient_id: string
+          prescription_id?: string | null
+          projected_period_months: number
+          projected_savings?: number | null
+          savings_percentage?: number | null
+          status?: Database["public"]["Enums"]["cost_savings_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          current_medication?: Json | null
+          current_monthly_cost?: number | null
+          current_projected_cost?: number | null
+          current_projected_period_months?: number | null
+          diagnosis?: string
+          evaluating_doctor_id?: string | null
+          id?: string
+          initial_medication?: Json
+          initial_monthly_cost?: number
+          initial_projected_cost?: number | null
+          intervention_cost?: number
+          intervention_date?: string | null
+          intervention_description?: string | null
+          intervention_type?: string
+          medical_record_id?: string | null
+          monthly_savings?: number | null
+          observations?: string | null
+          patient_id?: string
+          prescription_id?: string | null
+          projected_period_months?: number
+          projected_savings?: number | null
+          savings_percentage?: number | null
+          status?: Database["public"]["Enums"]["cost_savings_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_savings_cases_evaluating_doctor_id_fkey"
+            columns: ["evaluating_doctor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cost_savings_cases_medical_record_id_fkey"
+            columns: ["medical_record_id"]
+            isOneToOne: false
+            referencedRelation: "medical_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cost_savings_cases_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cost_savings_cases_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_records: {
         Row: {
           appointment_id: string | null
@@ -337,7 +453,11 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      cost_savings_status:
+        | "en_evaluacion"
+        | "intervenido"
+        | "completado"
+        | "sin_optimizacion"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -464,6 +584,13 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      cost_savings_status: [
+        "en_evaluacion",
+        "intervenido",
+        "completado",
+        "sin_optimizacion",
+      ],
+    },
   },
 } as const
