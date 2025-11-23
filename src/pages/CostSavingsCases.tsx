@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Search, TrendingDown, DollarSign, Calendar, User } from "lucide-react";
+import { Plus, Search, TrendingDown, DollarSign, Calendar, User, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -58,6 +59,7 @@ const statusColors = {
 };
 
 export default function CostSavingsCases() {
+  const navigate = useNavigate();
   const [cases, setCases] = useState<CostSavingsCase[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -590,6 +592,19 @@ export default function CostSavingsCases() {
                         </div>
                       </div>
                     )}
+                    
+                    {/* Actions */}
+                    <div className="pt-4 border-t">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="w-full"
+                        onClick={() => navigate(`/cost-savings/${caseItem.id}`)}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        Ver Detalles
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
