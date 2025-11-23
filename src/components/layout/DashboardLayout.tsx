@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, X, Calendar, Users, FileText, LayoutDashboard, Pill, TrendingDown } from "lucide-react";
+import { LogOut, Menu, X, Calendar, Users, FileText, LayoutDashboard, Pill, TrendingDown, Stethoscope } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import { NavLink } from "@/components/NavLink";
@@ -90,6 +90,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 Pacientes
               </NavLink>
               <NavLink
+                to="/doctors"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                activeClassName="bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+              >
+                <Stethoscope className="inline-block w-4 h-4 mr-2" />
+                Médicos
+              </NavLink>
+              <NavLink
                 to="/appointments"
                 className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                 activeClassName="bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
@@ -166,6 +174,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               >
                 <Users className="inline-block w-4 h-4 mr-2" />
                 Pacientes
+              </NavLink>
+              <NavLink
+                to="/doctors"
+                className="block px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
+                activeClassName="bg-primary text-primary-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Stethoscope className="inline-block w-4 h-4 mr-2" />
+                Médicos
               </NavLink>
               <NavLink
                 to="/appointments"
