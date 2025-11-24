@@ -186,6 +186,39 @@ export type Database = {
           },
         ]
       }
+      doctors: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          license_number: string | null
+          phone: string | null
+          specialty: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          license_number?: string | null
+          phone?: string | null
+          specialty: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          license_number?: string | null
+          phone?: string | null
+          specialty?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       medical_records: {
         Row: {
           appointment_id: string | null
