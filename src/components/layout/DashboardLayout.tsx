@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Menu, X, Calendar, Users, FileText, LayoutDashboard, Pill, TrendingDown, Stethoscope } from "lucide-react";
+import { LogOut, Menu, X, Calendar, Users, FileText, LayoutDashboard, Pill, TrendingDown, Stethoscope, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import { NavLink } from "@/components/NavLink";
@@ -38,6 +38,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const canViewMedicalRecords = isMedico || isMedicoEvaluador;
   const canViewPrescriptions = isMedico || isMedicoEvaluador;
   const canViewCostSavings = isMedico || isMedicoEvaluador || isGestor || isAdmin;
+  const canViewReports = isGestor || isAdmin;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -162,6 +163,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   Ahorro de Costos
                 </NavLink>
               )}
+              {canViewReports && (
+                <NavLink
+                  to="/reports"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                  activeClassName="bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                >
+                  <BarChart3 className="inline-block w-4 h-4 mr-2" />
+                  Reportes
+                </NavLink>
+              )}
             </div>
 
             {/* User Menu */}
@@ -266,6 +277,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 >
                   <TrendingDown className="inline-block w-4 h-4 mr-2" />
                   Ahorro de Costos
+                </NavLink>
+              )}
+              {canViewReports && (
+                <NavLink
+                  to="/reports"
+                  className="block px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
+                  activeClassName="bg-primary text-primary-foreground"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <BarChart3 className="inline-block w-4 h-4 mr-2" />
+                  Reportes
                 </NavLink>
               )}
               <div className="pt-4 border-t border-border">
