@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface Appointment {
   id: string;
@@ -35,6 +36,7 @@ interface Patient {
 }
 
 export default function Appointments() {
+  const { canCreateAppointment } = usePermissions();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
@@ -184,13 +186,14 @@ export default function Appointments() {
               Gestiona los turnos y citas médicas
             </p>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Nuevo Turno
-              </Button>
-            </DialogTrigger>
+          {canCreateAppointment && (
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nuevo Turno
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-xl">
               <DialogHeader>
                 <DialogTitle>Agendar Nuevo Turno</DialogTitle>
@@ -270,6 +273,7 @@ export default function Appointments() {
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </div>
 
         {loading ? (

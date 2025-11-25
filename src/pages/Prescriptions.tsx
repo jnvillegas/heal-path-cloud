@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface Prescription {
   id: string;
@@ -46,6 +47,7 @@ interface Medication {
 }
 
 export default function Prescriptions() {
+  const { canCreatePrescription } = usePermissions();
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
@@ -232,13 +234,14 @@ export default function Prescriptions() {
               Gestiona las recetas médicas de tus pacientes
             </p>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Nueva Receta
-              </Button>
-            </DialogTrigger>
+          {canCreatePrescription && (
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nueva Receta
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Nueva Receta Electrónica</DialogTitle>
@@ -373,6 +376,7 @@ export default function Prescriptions() {
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </div>
 
         <Card>

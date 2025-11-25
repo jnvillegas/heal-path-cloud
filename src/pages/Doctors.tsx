@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface Doctor {
   id: string;
@@ -30,6 +31,7 @@ const SPECIALTIES = [
 ];
 
 export default function Doctors() {
+  const { canManageDoctors } = usePermissions();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -179,13 +181,14 @@ export default function Doctors() {
               Administra el equipo médico de tu centro
             </p>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Agregar Médico
-              </Button>
-            </DialogTrigger>
+          {canManageDoctors && (
+            <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Agregar Médico
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>
@@ -271,6 +274,7 @@ export default function Doctors() {
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </div>
 
         <Card className="shadow-card">
@@ -344,22 +348,24 @@ export default function Doctors() {
                         <TableCell>{doctor.email}</TableCell>
                         <TableCell>{doctor.phone || "-"}</TableCell>
                         <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleEdit(doctor)}
-                            >
-                              <Pencil className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeleteClick(doctor)}
-                            >
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            </Button>
-                          </div>
+                          {canManageDoctors && (
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEdit(doctor)}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteClick(doctor)}
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
