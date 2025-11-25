@@ -13,6 +13,7 @@ import MedicalRecords from "./pages/MedicalRecords";
 import Prescriptions from "./pages/Prescriptions";
 import CostSavingsCases from "./pages/CostSavingsCases";
 import CostSavingsCaseDetail from "./pages/CostSavingsCaseDetail";
+import Reports from "./pages/Reports";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 
@@ -89,6 +90,14 @@ const App = () => (
             element={
               <ProtectedRoute allowedRoles={['medico', 'medico_evaluador', 'gestor']}>
                 <CostSavingsCaseDetail />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/reports" 
+            element={
+              <ProtectedRoute allowedRoles={['gestor', 'administrador']}>
+                <Reports />
               </ProtectedRoute>
             } 
           />
