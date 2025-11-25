@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import { NavLink } from "@/components/NavLink";
 import { useUserRole } from "@/hooks/useUserRole";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -184,6 +185,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </div>
                 <p className="text-xs text-muted-foreground">{user?.email}</p>
               </div>
+              <NotificationBell />
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 <LogOut className="w-4 h-4 mr-2" />
                 Salir

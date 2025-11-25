@@ -379,6 +379,56 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          priority: Database["public"]["Enums"]["notification_priority"]
+          read_at: string | null
+          related_id: string | null
+          related_table: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          priority?: Database["public"]["Enums"]["notification_priority"]
+          read_at?: string | null
+          related_id?: string | null
+          related_table?: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          priority?: Database["public"]["Enums"]["notification_priority"]
+          read_at?: string | null
+          related_id?: string | null
+          related_table?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patients: {
         Row: {
           address: string | null
@@ -585,6 +635,13 @@ export type Database = {
         | "intervenido"
         | "completado"
         | "sin_optimizacion"
+      notification_priority: "low" | "medium" | "high" | "urgent"
+      notification_type:
+        | "appointment_reminder"
+        | "prescription_expiring"
+        | "case_assigned"
+        | "case_status_changed"
+        | "system_alert"
       timeline_event_type:
         | "created"
         | "status_change"
@@ -723,6 +780,14 @@ export const Constants = {
         "intervenido",
         "completado",
         "sin_optimizacion",
+      ],
+      notification_priority: ["low", "medium", "high", "urgent"],
+      notification_type: [
+        "appointment_reminder",
+        "prescription_expiring",
+        "case_assigned",
+        "case_status_changed",
+        "system_alert",
       ],
       timeline_event_type: [
         "created",
