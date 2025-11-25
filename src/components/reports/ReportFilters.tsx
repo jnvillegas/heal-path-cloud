@@ -38,18 +38,18 @@ export const ReportFilters = ({ onFilterChange }: ReportFiltersProps) => {
     onFilterChange({
       startDate: startDate ? new Date(startDate) : undefined,
       endDate: endDate ? new Date(endDate) : undefined,
-      specialty: specialty || undefined,
-      doctorId: doctorId || undefined,
-      status: status || undefined
+      specialty: specialty && specialty !== "all" ? specialty : undefined,
+      doctorId: doctorId && doctorId !== "all" ? doctorId : undefined,
+      status: status && status !== "all" ? status : undefined
     });
   };
 
   const clearFilters = () => {
     setStartDate("");
     setEndDate("");
-    setSpecialty("");
-    setDoctorId("");
-    setStatus("");
+    setSpecialty("all");
+    setDoctorId("all");
+    setStatus("all");
     onFilterChange({});
   };
 
@@ -84,7 +84,7 @@ export const ReportFilters = ({ onFilterChange }: ReportFiltersProps) => {
                 <SelectValue placeholder="Todas" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas</SelectItem>
+                <SelectItem value="all">Todas</SelectItem>
                 <SelectItem value="Oncología">Oncología</SelectItem>
                 <SelectItem value="Neurología">Neurología</SelectItem>
                 <SelectItem value="Reumatología">Reumatología</SelectItem>
@@ -101,7 +101,7 @@ export const ReportFilters = ({ onFilterChange }: ReportFiltersProps) => {
                 <SelectValue placeholder="Todos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="all">Todos</SelectItem>
                 {doctors.map((doc) => (
                   <SelectItem key={doc.id} value={doc.id}>
                     {doc.full_name}
@@ -118,7 +118,7 @@ export const ReportFilters = ({ onFilterChange }: ReportFiltersProps) => {
                 <SelectValue placeholder="Todos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="en_evaluacion">En Evaluación</SelectItem>
                 <SelectItem value="intervenido">Intervenido</SelectItem>
                 <SelectItem value="completado">Completado</SelectItem>
