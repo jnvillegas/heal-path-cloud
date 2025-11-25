@@ -373,7 +373,6 @@ export default function Doctors() {
             </CardContent>
           </Card>
         )}
-      </div>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
@@ -396,6 +395,6 @@ export default function Doctors() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </div>
   );
 }
