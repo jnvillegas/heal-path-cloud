@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface CostSavingsCase {
   id: string;
@@ -59,6 +60,7 @@ const statusColors = {
 };
 
 export default function CostSavingsCases() {
+  const { canCreateCase } = usePermissions();
   const navigate = useNavigate();
   const [cases, setCases] = useState<CostSavingsCase[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -234,13 +236,14 @@ export default function CostSavingsCases() {
               Gestión de optimización de costos médicos
             </p>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Nuevo Caso
-              </Button>
-            </DialogTrigger>
+          {canCreateCase && (
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nuevo Caso
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Registrar Nuevo Caso de Ahorro</DialogTitle>
@@ -460,6 +463,7 @@ export default function CostSavingsCases() {
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </div>
 
         {/* Filters */}

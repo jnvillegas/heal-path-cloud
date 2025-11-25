@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface Patient {
   id: string;
@@ -23,6 +24,7 @@ interface Patient {
 }
 
 export default function Patients() {
+  const { canCreatePatient } = usePermissions();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -115,13 +117,14 @@ export default function Patients() {
               Administra la información de tus pacientes
             </p>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Nuevo Paciente
-              </Button>
-            </DialogTrigger>
+          {canCreatePatient && (
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nuevo Paciente
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Registrar Nuevo Paciente</DialogTitle>
@@ -233,6 +236,7 @@ export default function Patients() {
               </form>
             </DialogContent>
           </Dialog>
+          )}
         </div>
 
         <Card className="shadow-card">
