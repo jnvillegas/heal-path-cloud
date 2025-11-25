@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { AppLayout } from "@/components/layout/AppLayout";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Patients from "./pages/Patients";
@@ -34,7 +35,9 @@ const App = () => (
             path="/dashboard" 
             element={
               <ProtectedRoute allowedRoles={['paciente', 'medico', 'medico_evaluador', 'gestor', 'administrador']}>
-                <Dashboard />
+                <AppLayout>
+                  <Dashboard />
+                </AppLayout>
               </ProtectedRoute>
             } 
           />
@@ -42,7 +45,9 @@ const App = () => (
             path="/patients" 
             element={
               <ProtectedRoute allowedRoles={['medico', 'medico_evaluador', 'administrador']}>
-                <Patients />
+                <AppLayout>
+                  <Patients />
+                </AppLayout>
               </ProtectedRoute>
             } 
           />
@@ -50,7 +55,9 @@ const App = () => (
             path="/doctors" 
             element={
               <ProtectedRoute allowedRoles={['administrador', 'gestor']}>
-                <Doctors />
+                <AppLayout>
+                  <Doctors />
+                </AppLayout>
               </ProtectedRoute>
             } 
           />
@@ -58,7 +65,9 @@ const App = () => (
             path="/appointments" 
             element={
               <ProtectedRoute allowedRoles={['medico', 'medico_evaluador', 'administrador']}>
-                <Appointments />
+                <AppLayout>
+                  <Appointments />
+                </AppLayout>
               </ProtectedRoute>
             } 
           />
@@ -66,7 +75,9 @@ const App = () => (
             path="/medical-records" 
             element={
               <ProtectedRoute allowedRoles={['medico', 'medico_evaluador']}>
-                <MedicalRecords />
+                <AppLayout>
+                  <MedicalRecords />
+                </AppLayout>
               </ProtectedRoute>
             } 
           />
@@ -74,7 +85,9 @@ const App = () => (
             path="/prescriptions" 
             element={
               <ProtectedRoute allowedRoles={['medico', 'medico_evaluador']}>
-                <Prescriptions />
+                <AppLayout>
+                  <Prescriptions />
+                </AppLayout>
               </ProtectedRoute>
             } 
           />
@@ -82,7 +95,9 @@ const App = () => (
             path="/cost-savings" 
             element={
               <ProtectedRoute allowedRoles={['medico', 'medico_evaluador', 'gestor', 'administrador']}>
-                <CostSavingsCases />
+                <AppLayout>
+                  <CostSavingsCases />
+                </AppLayout>
               </ProtectedRoute>
             } 
           />
@@ -90,7 +105,9 @@ const App = () => (
             path="/cost-savings/:id" 
             element={
               <ProtectedRoute allowedRoles={['medico', 'medico_evaluador', 'gestor']}>
-                <CostSavingsCaseDetail />
+                <AppLayout>
+                  <CostSavingsCaseDetail />
+                </AppLayout>
               </ProtectedRoute>
             } 
           />
@@ -98,7 +115,9 @@ const App = () => (
             path="/reports" 
             element={
               <ProtectedRoute allowedRoles={['gestor', 'administrador']}>
-                <Reports />
+                <AppLayout>
+                  <Reports />
+                </AppLayout>
               </ProtectedRoute>
             } 
           />
@@ -106,7 +125,9 @@ const App = () => (
             path="/notifications" 
             element={
               <ProtectedRoute allowedRoles={['paciente', 'medico', 'medico_evaluador', 'gestor', 'administrador']}>
-                <Notifications />
+                <AppLayout>
+                  <Notifications />
+                </AppLayout>
               </ProtectedRoute>
             } 
           />
