@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Calendar, DollarSign, TrendingDown, User, Activity, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { CaseTimeline, TimelineEvent } from "@/components/cost-savings/CaseTimeline";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface CostSavingsCase {
   id: string;
@@ -62,10 +64,14 @@ export default function CostSavingsCaseDetail() {
   const navigate = useNavigate();
   const [caseData, setCaseData] = useState<CostSavingsCase | null>(null);
   const [loading, setLoading] = useState(true);
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
+  const [loadingTimeline, setLoadingTimeline] = useState(false);
+  const { isMedico, isMedicoEvaluador, isAdmin } = useUserRole();
 
   useEffect(() => {
     if (id) {
       loadCaseData();
+      loadTimelineEvents();
     }
   }, [id]);
 
@@ -99,6 +105,85 @@ export default function CostSavingsCaseDetail() {
   const formatDate = (date: string | null) => {
     if (!date) return "-";
     return new Date(date).toLocaleDateString('es-AR');
+  };
+
+  const loadTimelineEvents = async () => {
+    if (!id) return;
+    
+    setLoadingTimeline(true);
+    try {
+      const { data, error } = await supabase
+        .from("cost_savings_timeline")
+        .select(`
+          id,
+          event_type,
+          event_date,
+          user_id,
+          description,
+          metadata,
+          profiles:user_id (full_name)
+        `)
+        .eq("case_id", id)
+        .order("event_date", { ascending: false });
+
+      if (error) throw error;
+
+      const mappedEvents: TimelineEvent[] = (data || []).map((event: any) => ({
+        id: event.id,
+        type: event.event_type,
+        date: event.event_date,
+        userId: event.user_id,
+        userName: event.profiles?.full_name || "Sistema",
+        title: getEventTitle(event.event_type),
+        description: event.description,
+        status: event.metadata?.new_status,
+      }));
+
+      setTimelineEvents(mappedEvents);
+    } catch (error: any) {
+      console.error("Error loading timeline:", error);
+      toast.error("Error al cargar el historial");
+    } finally {
+      setLoadingTimeline(false);
+    }
+  };
+
+  const getEventTitle = (eventType: string): string => {
+    const titles: Record<string, string> = {
+      created: "Caso Creado",
+      status_change: "Cambio de Estado",
+      intervention: "Intervención Registrada",
+      note: "Nota Agregada",
+      completed: "Caso Completado",
+    };
+    return titles[eventType] || eventType;
+  };
+
+  const handleAddNote = async (note: string) => {
+    if (!id) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No authenticated user");
+
+      const { error } = await supabase
+        .from("cost_savings_timeline")
+        .insert({
+          case_id: id,
+          event_type: "note",
+          user_id: user.id,
+          description: note,
+        });
+
+      if (error) throw error;
+
+      toast.success("Nota agregada exitosamente");
+      loadTimelineEvents();
+    } catch (error: any) {
+      console.error("Error adding note:", error);
+      toast.error("Error al agregar la nota");
+      throw error;
+    }
   };
 
   if (loading) {
@@ -154,30 +239,6 @@ export default function CostSavingsCaseDetail() {
     }
   ] : [];
 
-  // Timeline events
-  const timelineEvents = [
-    {
-      date: caseData.created_at,
-      title: "Caso Creado",
-      description: "Evaluación inicial del caso",
-      icon: FileText,
-      type: "info"
-    },
-    ...(caseData.intervention_date ? [{
-      date: caseData.intervention_date,
-      title: "Intervención Realizada",
-      description: caseData.intervention_description || caseData.intervention_type,
-      icon: Activity,
-      type: "success"
-    }] : []),
-    ...(caseData.status === "completado" ? [{
-      date: caseData.updated_at,
-      title: "Caso Completado",
-      description: "Optimización exitosa",
-      icon: TrendingDown,
-      type: "success"
-    }] : [])
-  ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
     <DashboardLayout>
@@ -345,48 +406,11 @@ export default function CostSavingsCaseDetail() {
         </div>
 
         {/* Timeline */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              Línea de Tiempo
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {timelineEvents.map((event, index) => {
-                const Icon = event.icon;
-                return (
-                  <div key={index} className="flex gap-4">
-                    <div className="flex flex-col items-center">
-                      <div className={`p-2 rounded-full ${
-                        event.type === 'success' ? 'bg-green-500/10' : 'bg-blue-500/10'
-                      }`}>
-                        <Icon className={`w-4 h-4 ${
-                          event.type === 'success' ? 'text-green-600' : 'text-blue-600'
-                        }`} />
-                      </div>
-                      {index < timelineEvents.length - 1 && (
-                        <div className="w-px h-full bg-border mt-2" />
-                      )}
-                    </div>
-                    <div className="flex-1 pb-8">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold">{event.title}</h3>
-                        <span className="text-sm text-muted-foreground">
-                          {formatDate(event.date)}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {event.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+        <CaseTimeline
+          events={timelineEvents}
+          onAddNote={(isMedico || isMedicoEvaluador || isAdmin) ? handleAddNote : undefined}
+          isLoading={loadingTimeline}
+        />
 
         {/* Medications Comparison */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
