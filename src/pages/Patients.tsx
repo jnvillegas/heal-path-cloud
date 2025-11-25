@@ -3,11 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Search, User } from "lucide-react";
+import { Plus, Search, User, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { usePermissions } from "@/hooks/usePermissions";
 
 interface Patient {
@@ -23,11 +25,14 @@ interface Patient {
 }
 
 export default function Patients() {
-  const { canCreatePatient } = usePermissions();
+  const { canCreatePatient, canUpdatePatient, canDeletePatient } = usePermissions();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const [formData, setFormData] = useState({
     document_type: "DNI",
     document_number: "",
@@ -66,34 +71,103 @@ export default function Patients() {
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuario no autenticado");
+      if (editingPatient) {
+        // Update existing patient
+        const { error } = await supabase
+          .from("patients")
+          .update(formData)
+          .eq("id", editingPatient.id);
 
-      const { error } = await supabase.from("patients").insert({
-        ...formData,
-        created_by: user.id,
-      });
+        if (error) throw error;
+        toast.success("Paciente actualizado exitosamente");
+      } else {
+        // Create new patient
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Usuario no autenticado");
+
+        const { error } = await supabase.from("patients").insert({
+          ...formData,
+          created_by: user.id,
+        });
+
+        if (error) throw error;
+        toast.success("Paciente creado exitosamente");
+      }
+
+      setDialogOpen(false);
+      setEditingPatient(null);
+      resetForm();
+      loadPatients();
+    } catch (error: any) {
+      toast.error(error.message || "Error al guardar paciente");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (patient: Patient) => {
+    setEditingPatient(patient);
+    setFormData({
+      document_type: "DNI",
+      document_number: patient.document_number,
+      first_name: patient.first_name,
+      last_name: patient.last_name,
+      birth_date: patient.birth_date,
+      gender: patient.gender,
+      email: patient.email || "",
+      phone: patient.phone || "",
+      mobile_phone: patient.mobile_phone || "",
+    });
+    setDialogOpen(true);
+  };
+
+  const handleDeleteClick = (patient: Patient) => {
+    setPatientToDelete(patient);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!patientToDelete) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from("patients")
+        .delete()
+        .eq("id", patientToDelete.id);
 
       if (error) throw error;
 
-      toast.success("Paciente creado exitosamente");
-      setDialogOpen(false);
-      setFormData({
-        document_type: "DNI",
-        document_number: "",
-        first_name: "",
-        last_name: "",
-        birth_date: "",
-        gender: "Masculino",
-        email: "",
-        phone: "",
-        mobile_phone: "",
-      });
+      toast.success("Paciente eliminado exitosamente");
+      setDeleteDialogOpen(false);
+      setPatientToDelete(null);
       loadPatients();
     } catch (error: any) {
-      toast.error(error.message || "Error al crear paciente");
+      toast.error(error.message || "Error al eliminar paciente");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      document_type: "DNI",
+      document_number: "",
+      first_name: "",
+      last_name: "",
+      birth_date: "",
+      gender: "Masculino",
+      email: "",
+      phone: "",
+      mobile_phone: "",
+    });
+  };
+
+  const handleDialogClose = (open: boolean) => {
+    setDialogOpen(open);
+    if (!open) {
+      setEditingPatient(null);
+      resetForm();
     }
   };
 
@@ -116,7 +190,7 @@ export default function Patients() {
             </p>
           </div>
           {canCreatePatient && (
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="w-4 h-4 mr-2" />
@@ -125,7 +199,9 @@ export default function Patients() {
               </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Registrar Nuevo Paciente</DialogTitle>
+                <DialogTitle>
+                  {editingPatient ? "Editar Paciente" : "Registrar Nuevo Paciente"}
+                </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -224,11 +300,11 @@ export default function Patients() {
                   </div>
                 </div>
                 <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                  <Button type="button" variant="outline" onClick={() => handleDialogClose(false)}>
                     Cancelar
                   </Button>
                   <Button type="submit" disabled={loading}>
-                    Guardar Paciente
+                    {editingPatient ? "Actualizar Paciente" : "Guardar Paciente"}
                   </Button>
                 </div>
               </form>
@@ -264,30 +340,85 @@ export default function Patients() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredPatients.map((patient) => (
-              <Card key={patient.id} className="shadow-card hover:shadow-medium transition-all cursor-pointer">
-                <CardContent className="pt-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <User className="w-6 h-6 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-lg truncate">
-                        {patient.first_name} {patient.last_name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">{patient.document_number}</p>
-                      <p className="text-sm text-muted-foreground">{patient.gender}</p>
-                      {patient.mobile_phone && (
-                        <p className="text-sm text-muted-foreground mt-1">📱 {patient.mobile_phone}</p>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Card className="shadow-card">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nombre Completo</TableHead>
+                      <TableHead>Documento</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Teléfono</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredPatients.map((patient) => (
+                      <TableRow key={patient.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <User className="w-4 h-4 text-primary" />
+                            </div>
+                            {patient.first_name} {patient.last_name}
+                          </div>
+                        </TableCell>
+                        <TableCell>{patient.document_number}</TableCell>
+                        <TableCell>{patient.email || "-"}</TableCell>
+                        <TableCell>{patient.mobile_phone || patient.phone || "-"}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            {canUpdatePatient && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEdit(patient)}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {canDeletePatient && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteClick(patient)}
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
         )}
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción eliminará permanentemente al paciente{" "}
+              <strong>{patientToDelete?.first_name} {patientToDelete?.last_name}</strong>. Esta acción no se puede
+              deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       </div>
   );
 }
