@@ -32,6 +32,7 @@ const navigationSections = [
     items: [
       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ['paciente', 'medico', 'medico_evaluador', 'gestor', 'administrador'] },
       { name: "Reportes", href: "/reports", icon: BarChart3, roles: ['gestor', 'administrador'] },
+      { name: "Reportes Ejecutivos", href: "/reports/executive", icon: BarChart3, roles: ['gestor', 'administrador'] },
     ],
   },
   {

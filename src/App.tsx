@@ -15,6 +15,7 @@ import Prescriptions from "./pages/Prescriptions";
 import CostSavingsCases from "./pages/CostSavingsCases";
 import CostSavingsCaseDetail from "./pages/CostSavingsCaseDetail";
 import Reports from "./pages/Reports";
+import ExecutiveReports from "./pages/ExecutiveReports";
 import Notifications from "./pages/Notifications";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
@@ -122,7 +123,17 @@ const App = () => (
             } 
           />
           <Route 
-            path="/notifications" 
+            path="/reports/executive" 
+            element={
+              <ProtectedRoute allowedRoles={['gestor', 'administrador']}>
+                <AppLayout>
+                  <ExecutiveReports />
+                </AppLayout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/notifications"
             element={
               <ProtectedRoute allowedRoles={['paciente', 'medico', 'medico_evaluador', 'gestor', 'administrador']}>
                 <AppLayout>
