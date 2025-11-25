@@ -1,5 +1,4 @@
 import { useState } from "react";
-import DashboardLayout from "@/components/layout/DashboardLayout";
 import { KpiCard } from "@/components/reports/KpiCard";
 import { ReportFilters } from "@/components/reports/ReportFilters";
 import { ExportButtons } from "@/components/reports/ExportButtons";
@@ -35,11 +34,9 @@ export default function Reports() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-96">
-          <div className="animate-pulse text-muted-foreground">Cargando reportes...</div>
-        </div>
-      </DashboardLayout>
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-pulse text-muted-foreground">Cargando reportes...</div>
+      </div>
     );
   }
 
@@ -51,8 +48,7 @@ export default function Reports() {
   };
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -125,6 +121,5 @@ export default function Reports() {
         
         <DoctorsComparisonChart data={reportData?.doctorData || []} />
       </div>
-    </DashboardLayout>
   );
 }
