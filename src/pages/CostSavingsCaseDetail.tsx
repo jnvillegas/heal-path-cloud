@@ -9,7 +9,10 @@ import { ArrowLeft, Calendar, DollarSign, TrendingDown, User, Activity, FileText
 import { toast } from "sonner";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { CaseTimeline, TimelineEvent } from "@/components/cost-savings/CaseTimeline";
+import { DocumentUploader } from "@/components/cost-savings/DocumentUploader";
+import { DocumentList } from "@/components/cost-savings/DocumentList";
 import { useUserRole } from "@/hooks/useUserRole";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface CostSavingsCase {
   id: string;
@@ -66,13 +69,20 @@ export default function CostSavingsCaseDetail() {
   const [loading, setLoading] = useState(true);
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
   const [loadingTimeline, setLoadingTimeline] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const { isMedico, isMedicoEvaluador, isAdmin } = useUserRole();
+  const permissions = usePermissions();
 
   useEffect(() => {
     if (id) {
       loadCaseData();
       loadTimelineEvents();
     }
+    
+    // Get current user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setCurrentUserId(user?.id || null);
+    });
   }, [id]);
 
   const loadCaseData = async () => {
@@ -411,6 +421,35 @@ export default function CostSavingsCaseDetail() {
           onAddNote={(isMedico || isMedicoEvaluador || isAdmin) ? handleAddNote : undefined}
           isLoading={loadingTimeline}
         />
+
+        {/* Documents Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Documentos Adjuntos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {(permissions.canCreateCase || isAdmin) && id && (
+              <DocumentUploader
+                caseId={id}
+                onUploadComplete={() => {
+                  // Trigger reload of document list
+                  const event = new CustomEvent("documentsUpdated");
+                  window.dispatchEvent(event);
+                }}
+              />
+            )}
+            {id && (
+              <DocumentList
+                caseId={id}
+                currentUserId={currentUserId}
+                isAdmin={isAdmin}
+              />
+            )}
+          </CardContent>
+        </Card>
 
         {/* Medications Comparison */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
