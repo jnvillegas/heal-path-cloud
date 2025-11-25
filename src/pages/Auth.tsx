@@ -198,12 +198,14 @@ export default function Auth() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="medico">Médico</SelectItem>
-                        <SelectItem value="administracion">Administración</SelectItem>
-                        <SelectItem value="enfermeria">Enfermería</SelectItem>
+                        <SelectItem value="medico_evaluador">Médico Evaluador</SelectItem>
+                        <SelectItem value="gestor">Gestor</SelectItem>
+                        <SelectItem value="administrador">Administrador</SelectItem>
+                        <SelectItem value="paciente">Paciente</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  {signupRole === "medico" && (
+                  {(signupRole === "medico" || signupRole === "medico_evaluador") && (
                     <div className="space-y-2">
                       <Label htmlFor="signup-specialty">Especialidad</Label>
                       <Input
