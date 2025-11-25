@@ -5,6 +5,7 @@ interface PermissionsData {
   canViewAllPatients: boolean;
   canCreatePatient: boolean;
   canEditPatient: boolean;
+  canUpdatePatient: boolean;
   canDeletePatient: boolean;
   
   // Cost Savings Cases
@@ -52,6 +53,7 @@ export const usePermissions = (): PermissionsData & { role: UserRole | null; isL
     canViewAllPatients: !isPaciente, // All except patients
     canCreatePatient: isMedico || isMedicoEvaluador || isAdmin,
     canEditPatient: isMedico || isMedicoEvaluador || isAdmin,
+    canUpdatePatient: isMedico || isMedicoEvaluador || isAdmin,
     canDeletePatient: isAdmin,
     
     // Cost Savings Cases permissions
