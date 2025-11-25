@@ -186,6 +186,47 @@ export type Database = {
           },
         ]
       }
+      cost_savings_timeline: {
+        Row: {
+          case_id: string
+          created_at: string
+          description: string
+          event_date: string
+          event_type: Database["public"]["Enums"]["timeline_event_type"]
+          id: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          description: string
+          event_date?: string
+          event_type: Database["public"]["Enums"]["timeline_event_type"]
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          description?: string
+          event_date?: string
+          event_type?: Database["public"]["Enums"]["timeline_event_type"]
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_savings_timeline_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cost_savings_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctors: {
         Row: {
           created_at: string
@@ -494,6 +535,12 @@ export type Database = {
         | "intervenido"
         | "completado"
         | "sin_optimizacion"
+      timeline_event_type:
+        | "created"
+        | "status_change"
+        | "intervention"
+        | "note"
+        | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -626,6 +673,13 @@ export const Constants = {
         "intervenido",
         "completado",
         "sin_optimizacion",
+      ],
+      timeline_event_type: [
+        "created",
+        "status_change",
+        "intervention",
+        "note",
+        "completed",
       ],
     },
   },
