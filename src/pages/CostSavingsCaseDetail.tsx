@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -198,25 +197,21 @@ export default function CostSavingsCaseDetail() {
 
   if (loading) {
     return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Cargando...</div>
-        </div>
-      </DashboardLayout>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-muted-foreground">Cargando...</div>
+      </div>
     );
   }
 
   if (!caseData) {
     return (
-      <DashboardLayout>
-        <div className="flex flex-col items-center justify-center h-64 space-y-4">
-          <div className="text-muted-foreground">Caso no encontrado</div>
-          <Button onClick={() => navigate("/cost-savings")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver al listado
-          </Button>
-        </div>
-      </DashboardLayout>
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <div className="text-muted-foreground">Caso no encontrado</div>
+        <Button onClick={() => navigate("/cost-savings")}>
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Volver al listado
+        </Button>
+      </div>
     );
   }
 
@@ -251,8 +246,7 @@ export default function CostSavingsCaseDetail() {
 
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -545,8 +539,7 @@ export default function CostSavingsCaseDetail() {
               </div>
             )}
           </CardContent>
-        </Card>
-      </div>
-    </DashboardLayout>
-  );
-}
+          </Card>
+        </div>
+    );
+  }
