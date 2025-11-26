@@ -14,7 +14,7 @@ export const ProtectedRoute = ({
   allowedRoles, 
   redirectTo = "/unauthorized" 
 }: ProtectedRouteProps) => {
-  const { role, isLoading, isActive } = useUserRole();
+  const { role, isLoading, isActive, isAdmin } = useUserRole();
 
   if (isLoading) {
     return (
@@ -26,6 +26,11 @@ export const ProtectedRoute = ({
 
   if (!role || !isActive) {
     return <Navigate to="/auth" replace />;
+  }
+
+  // Administrador tiene acceso a todas las rutas
+  if (isAdmin) {
+    return <>{children}</>;
   }
 
   if (!allowedRoles.includes(role)) {

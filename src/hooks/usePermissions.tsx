@@ -45,27 +45,59 @@ interface PermissionsData {
 export const usePermissions = (): PermissionsData & { role: UserRole | null; isLoading: boolean } => {
   const { role, isLoading, isAdmin, isMedico, isMedicoEvaluador, isGestor, isPaciente } = useUserRole();
 
+  // Administrador tiene acceso total a TODOS los módulos y funcionalidades
+  if (isAdmin) {
+    return {
+      role,
+      isLoading,
+      canViewAllPatients: true,
+      canCreatePatient: true,
+      canEditPatient: true,
+      canUpdatePatient: true,
+      canDeletePatient: true,
+      canViewAllCases: true,
+      canCreateCase: true,
+      canEvaluateCase: true,
+      canEditCase: true,
+      canViewAllAppointments: true,
+      canCreateAppointment: true,
+      canEditAppointment: true,
+      canViewAllMedicalRecords: true,
+      canCreateMedicalRecord: true,
+      canEditMedicalRecord: true,
+      canViewAllPrescriptions: true,
+      canCreatePrescription: true,
+      canEditPrescription: true,
+      canViewReports: true,
+      canGenerateReports: true,
+      canManageUsers: true,
+      canManageConfiguration: true,
+      canViewDoctors: true,
+      canManageDoctors: true,
+    };
+  }
+
   return {
     role,
     isLoading,
     
     // Patients permissions
     canViewAllPatients: !isPaciente, // All except patients
-    canCreatePatient: isMedico || isMedicoEvaluador || isAdmin,
-    canEditPatient: isMedico || isMedicoEvaluador || isAdmin,
-    canUpdatePatient: isMedico || isMedicoEvaluador || isAdmin,
-    canDeletePatient: isAdmin,
+    canCreatePatient: isMedico || isMedicoEvaluador,
+    canEditPatient: isMedico || isMedicoEvaluador,
+    canUpdatePatient: isMedico || isMedicoEvaluador,
+    canDeletePatient: false,
     
     // Cost Savings Cases permissions
     canViewAllCases: !isPaciente, // All except patients
-    canCreateCase: isMedico || isMedicoEvaluador || isAdmin,
-    canEvaluateCase: isMedicoEvaluador || isAdmin,
-    canEditCase: isMedicoEvaluador || isAdmin,
+    canCreateCase: isMedico || isMedicoEvaluador,
+    canEvaluateCase: isMedicoEvaluador,
+    canEditCase: isMedicoEvaluador,
     
     // Appointments permissions
     canViewAllAppointments: !isPaciente,
-    canCreateAppointment: isMedico || isMedicoEvaluador || isAdmin,
-    canEditAppointment: isMedico || isMedicoEvaluador || isAdmin,
+    canCreateAppointment: isMedico || isMedicoEvaluador,
+    canEditAppointment: isMedico || isMedicoEvaluador,
     
     // Medical Records permissions
     canViewAllMedicalRecords: !isPaciente,
@@ -78,15 +110,15 @@ export const usePermissions = (): PermissionsData & { role: UserRole | null; isL
     canEditPrescription: isMedico || isMedicoEvaluador,
     
     // Reports permissions
-    canViewReports: isGestor || isAdmin,
-    canGenerateReports: isGestor || isAdmin,
+    canViewReports: isGestor,
+    canGenerateReports: isGestor,
     
     // Users & Configuration permissions
-    canManageUsers: isAdmin,
-    canManageConfiguration: isAdmin,
+    canManageUsers: false,
+    canManageConfiguration: false,
     
     // Doctors permissions
-    canViewDoctors: isAdmin || isGestor,
-    canManageDoctors: isAdmin,
+    canViewDoctors: isGestor,
+    canManageDoctors: false,
   };
 };
