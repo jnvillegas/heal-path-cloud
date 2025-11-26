@@ -437,6 +437,7 @@ export type Database = {
           blood_type: string | null
           chronic_conditions: string | null
           city: string | null
+          copayment_percentage: number | null
           created_at: string
           created_by: string | null
           current_medications: string | null
@@ -448,8 +449,18 @@ export type Database = {
           first_name: string
           gender: string
           id: string
+          insurance_authorization_required: boolean | null
           insurance_number: string | null
+          insurance_plan: string | null
           insurance_provider: string | null
+          insurance_status: string | null
+          is_judicial_case: boolean | null
+          judicial_court: string | null
+          judicial_file_number: string | null
+          judicial_lawyer_contact: string | null
+          judicial_lawyer_name: string | null
+          judicial_notes: string | null
+          judicial_status: string | null
           last_name: string
           mobile_phone: string | null
           notes: string | null
@@ -466,6 +477,7 @@ export type Database = {
           blood_type?: string | null
           chronic_conditions?: string | null
           city?: string | null
+          copayment_percentage?: number | null
           created_at?: string
           created_by?: string | null
           current_medications?: string | null
@@ -477,8 +489,18 @@ export type Database = {
           first_name: string
           gender: string
           id?: string
+          insurance_authorization_required?: boolean | null
           insurance_number?: string | null
+          insurance_plan?: string | null
           insurance_provider?: string | null
+          insurance_status?: string | null
+          is_judicial_case?: boolean | null
+          judicial_court?: string | null
+          judicial_file_number?: string | null
+          judicial_lawyer_contact?: string | null
+          judicial_lawyer_name?: string | null
+          judicial_notes?: string | null
+          judicial_status?: string | null
           last_name: string
           mobile_phone?: string | null
           notes?: string | null
@@ -495,6 +517,7 @@ export type Database = {
           blood_type?: string | null
           chronic_conditions?: string | null
           city?: string | null
+          copayment_percentage?: number | null
           created_at?: string
           created_by?: string | null
           current_medications?: string | null
@@ -506,8 +529,18 @@ export type Database = {
           first_name?: string
           gender?: string
           id?: string
+          insurance_authorization_required?: boolean | null
           insurance_number?: string | null
+          insurance_plan?: string | null
           insurance_provider?: string | null
+          insurance_status?: string | null
+          is_judicial_case?: boolean | null
+          judicial_court?: string | null
+          judicial_file_number?: string | null
+          judicial_lawyer_contact?: string | null
+          judicial_lawyer_name?: string | null
+          judicial_notes?: string | null
+          judicial_status?: string | null
           last_name?: string
           mobile_phone?: string | null
           notes?: string | null
