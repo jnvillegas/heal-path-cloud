@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Calendar, DollarSign, TrendingDown, User, Activity, FileText } from "lucide-react";
+import { ArrowLeft, Calendar, DollarSign, TrendingDown, User, Activity, FileText, AlertTriangle, Scale } from "lucide-react";
 import { toast } from "sonner";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { CaseTimeline, TimelineEvent } from "@/components/cost-savings/CaseTimeline";
@@ -12,6 +12,7 @@ import { DocumentUploader } from "@/components/cost-savings/DocumentUploader";
 import { DocumentList } from "@/components/cost-savings/DocumentList";
 import { useUserRole } from "@/hooks/useUserRole";
 import { usePermissions } from "@/hooks/usePermissions";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface CostSavingsCase {
   id: string;
@@ -41,6 +42,10 @@ interface CostSavingsCase {
     last_name: string;
     document_number: string;
     insurance_provider: string | null;
+    is_judicial_case: boolean | null;
+    judicial_file_number: string | null;
+    judicial_court: string | null;
+    judicial_lawyer_name: string | null;
   };
   profiles?: {
     full_name: string;
@@ -90,7 +95,7 @@ export default function CostSavingsCaseDetail() {
         .from("cost_savings_cases")
         .select(`
           *,
-          patients (first_name, last_name, document_number, insurance_provider),
+          patients (first_name, last_name, document_number, insurance_provider, is_judicial_case, judicial_file_number, judicial_court, judicial_lawyer_name),
           profiles:evaluating_doctor_id (full_name)
         `)
         .eq("id", id)
@@ -274,22 +279,46 @@ export default function CostSavingsCaseDetail() {
             <CardTitle className="flex items-center gap-2">
               <User className="w-5 h-5" />
               Información del Paciente
+              {caseData.patients?.is_judicial_case && (
+                <Badge variant="destructive" className="flex items-center gap-1 ml-2">
+                  <Scale className="w-3 h-3" />
+                  Caso Judicializado
+                </Badge>
+              )}
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <div className="text-sm text-muted-foreground">Paciente</div>
-              <div className="font-medium">
-                {caseData.patients?.first_name} {caseData.patients?.last_name}
+          <CardContent className="space-y-4">
+            {caseData.patients?.is_judicial_case && (
+              <Alert variant="destructive" className="border-l-4 border-red-500">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Paciente con Caso Judicial</AlertTitle>
+                <AlertDescription className="mt-2 space-y-1">
+                  <div><strong>Expediente:</strong> {caseData.patients.judicial_file_number || "N/A"}</div>
+                  {caseData.patients.judicial_court && (
+                    <div><strong>Juzgado:</strong> {caseData.patients.judicial_court}</div>
+                  )}
+                  {caseData.patients.judicial_lawyer_name && (
+                    <div><strong>Abogado:</strong> {caseData.patients.judicial_lawyer_name}</div>
+                  )}
+                  <div className="mt-2 text-xs">Este caso requiere especial atención debido al amparo judicial del paciente.</div>
+                </AlertDescription>
+              </Alert>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <div className="text-sm text-muted-foreground">Paciente</div>
+                <div className="font-medium">
+                  {caseData.patients?.first_name} {caseData.patients?.last_name}
+                </div>
               </div>
-            </div>
-            <div>
-              <div className="text-sm text-muted-foreground">Documento</div>
-              <div className="font-medium">{caseData.patients?.document_number}</div>
-            </div>
-            <div>
-              <div className="text-sm text-muted-foreground">Obra Social</div>
-              <div className="font-medium">{caseData.patients?.insurance_provider || "-"}</div>
+              <div>
+                <div className="text-sm text-muted-foreground">Documento</div>
+                <div className="font-medium">{caseData.patients?.document_number}</div>
+              </div>
+              <div>
+                <div className="text-sm text-muted-foreground">Obra Social</div>
+                <div className="font-medium">{caseData.patients?.insurance_provider || "-"}</div>
+              </div>
             </div>
           </CardContent>
         </Card>

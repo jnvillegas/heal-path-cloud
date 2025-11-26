@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Search, TrendingDown, DollarSign, Calendar, User, Eye } from "lucide-react";
+import { Plus, Search, TrendingDown, DollarSign, Calendar, User, Eye, Scale } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -29,6 +29,8 @@ interface CostSavingsCase {
   patients?: {
     first_name: string;
     last_name: string;
+    is_judicial_case: boolean | null;
+    judicial_file_number: string | null;
   };
 }
 
@@ -97,7 +99,7 @@ export default function CostSavingsCases() {
           .from("cost_savings_cases")
           .select(`
             *,
-            patients (first_name, last_name)
+            patients (first_name, last_name, is_judicial_case, judicial_file_number)
           `)
           .order("created_at", { ascending: false }),
         supabase
@@ -530,6 +532,12 @@ export default function CostSavingsCases() {
                               'Paciente no encontrado'
                             }
                           </h3>
+                          {caseItem.patients?.is_judicial_case && (
+                            <Badge variant="destructive" className="flex items-center gap-1 ml-1">
+                              <Scale className="w-3 h-3" />
+                              Judicial
+                            </Badge>
+                          )}
                         </div>
                         <p className="text-sm text-muted-foreground line-clamp-2">
                           {caseItem.diagnosis}
