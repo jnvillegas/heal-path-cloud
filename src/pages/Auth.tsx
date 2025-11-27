@@ -14,6 +14,7 @@ import logo from "@/assets/logo.png";
 export default function Auth() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   // Login state
   const [loginEmail, setLoginEmail] = useState("");
@@ -27,20 +28,32 @@ export default function Auth() {
   const [signupSpecialty, setSignupSpecialty] = useState("");
 
   useEffect(() => {
+    let mounted = true;
+
+    // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/dashboard");
+      if (session && mounted && !hasNavigated) {
+        setHasNavigated(true);
+        navigate("/dashboard", { replace: true });
       }
     });
 
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/dashboard");
+      if (session && mounted && !hasNavigated) {
+        setHasNavigated(true);
+        // Use setTimeout to defer navigation and prevent rapid navigation loops
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 100);
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate, hasNavigated]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
