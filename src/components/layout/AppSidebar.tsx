@@ -41,8 +41,8 @@ const navigationSections = [
       { name: "Pacientes", href: "/patients", icon: Users, roles: ['medico', 'medico_evaluador', 'administrador'] },
       { name: "Médicos", href: "/doctors", icon: Stethoscope, roles: ['administrador', 'gestor'] },
       { name: "Citas", href: "/appointments", icon: Calendar, roles: ['medico', 'medico_evaluador', 'administrador'] },
-      { name: "Historias Clínicas", href: "/medical-records", icon: FileText, roles: ['medico', 'medico_evaluador'] },
-      { name: "Recetas", href: "/prescriptions", icon: Pill, roles: ['medico', 'medico_evaluador'] },
+      { name: "Historias Clínicas", href: "/medical-records", icon: FileText, roles: ['medico', 'medico_evaluador', 'administrador'] },
+      { name: "Recetas", href: "/prescriptions", icon: Pill, roles: ['medico', 'medico_evaluador', 'administrador'] },
     ],
   },
   {
