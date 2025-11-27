@@ -14,20 +14,29 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
+    // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session?.user) {
-        navigate("/auth");
+      if (mounted) {
+        if (!session?.user) {
+          navigate("/auth", { replace: true });
+        }
+        setLoading(false);
       }
-      setLoading(false);
     });
 
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session?.user) {
-        navigate("/auth");
+      if (mounted && !session?.user) {
+        navigate("/auth", { replace: true });
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   if (loading) {
