@@ -19,24 +19,33 @@ interface UserRoleData {
 
 export const useUserRole = (): UserRoleData => {
   const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
       setUser(session?.user ?? null);
+      setAuthLoading(false);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
+        if (!mounted) return;
         setUser(session?.user ?? null);
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading: isRoleLoading } = useQuery({
     queryKey: ['user-role', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -60,11 +69,12 @@ export const useUserRole = (): UserRoleData => {
 
   const role = data?.role as UserRole | null;
   const status = data?.status as 'active' | 'inactive' | null;
+  const combinedLoading = authLoading || isRoleLoading;
 
   return {
     role,
     status,
-    isLoading,
+    isLoading: combinedLoading,
     isAdmin: role === 'administrador',
     isMedico: role === 'medico',
     isMedicoEvaluador: role === 'medico_evaluador',
