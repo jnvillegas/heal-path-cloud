@@ -54,7 +54,7 @@ export const useUserRole = (): UserRoleData => {
         .from('profiles')
         .select('role, status')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching user role:', error);
