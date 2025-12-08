@@ -30,23 +30,40 @@ export default function Auth() {
   useEffect(() => {
     let mounted = true;
 
-    // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session && mounted && !hasNavigated) {
+    const validateAndNavigate = async (session: any) => {
+      if (!session || !mounted || hasNavigated) return;
+      
+      // Verify user profile exists before navigating
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      
+      if (error || !profile) {
+        // Invalid session - user doesn't have a profile, sign out
+        console.warn('Session invalid: no profile found, signing out');
+        await supabase.auth.signOut();
+        return;
+      }
+      
+      if (mounted && !hasNavigated) {
         setHasNavigated(true);
         navigate("/dashboard", { replace: true });
       }
+    };
+
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      validateAndNavigate(session);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && mounted && !hasNavigated) {
-        setHasNavigated(true);
-        // Use setTimeout to defer navigation and prevent rapid navigation loops
-        setTimeout(() => {
-          navigate("/dashboard", { replace: true });
-        }, 100);
-      }
+      if (event === 'SIGNED_OUT') return;
+      setTimeout(() => {
+        validateAndNavigate(session);
+      }, 100);
     });
 
     return () => {
