@@ -655,6 +655,108 @@ export type Database = {
         }
         Relationships: []
       }
+      treatment_adherence: {
+        Row: {
+          authorization_days: number
+          authorization_profile: Database["public"]["Enums"]["authorization_profile"]
+          checkup_margin_days: number
+          created_at: string
+          created_by: string | null
+          cycles_per_month: number
+          daily_dose: number
+          days_remaining: number | null
+          dose_unit: string
+          estimated_depletion_date: string | null
+          id: string
+          is_active: boolean
+          managed_quantity: number
+          medication_name: string
+          next_authorization_start_date: string | null
+          next_checkup_date: string | null
+          notes: string | null
+          patient_id: string
+          payer_file_number: string
+          payer_type: string
+          prescription_id: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["adherence_status"]
+          treatment_type: Database["public"]["Enums"]["treatment_type"]
+          units_per_box: number
+          updated_at: string
+        }
+        Insert: {
+          authorization_days?: number
+          authorization_profile?: Database["public"]["Enums"]["authorization_profile"]
+          checkup_margin_days?: number
+          created_at?: string
+          created_by?: string | null
+          cycles_per_month?: number
+          daily_dose: number
+          days_remaining?: number | null
+          dose_unit?: string
+          estimated_depletion_date?: string | null
+          id?: string
+          is_active?: boolean
+          managed_quantity: number
+          medication_name: string
+          next_authorization_start_date?: string | null
+          next_checkup_date?: string | null
+          notes?: string | null
+          patient_id: string
+          payer_file_number: string
+          payer_type: string
+          prescription_id?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["adherence_status"]
+          treatment_type?: Database["public"]["Enums"]["treatment_type"]
+          units_per_box: number
+          updated_at?: string
+        }
+        Update: {
+          authorization_days?: number
+          authorization_profile?: Database["public"]["Enums"]["authorization_profile"]
+          checkup_margin_days?: number
+          created_at?: string
+          created_by?: string | null
+          cycles_per_month?: number
+          daily_dose?: number
+          days_remaining?: number | null
+          dose_unit?: string
+          estimated_depletion_date?: string | null
+          id?: string
+          is_active?: boolean
+          managed_quantity?: number
+          medication_name?: string
+          next_authorization_start_date?: string | null
+          next_checkup_date?: string | null
+          notes?: string | null
+          patient_id?: string
+          payer_file_number?: string
+          payer_type?: string
+          prescription_id?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["adherence_status"]
+          treatment_type?: Database["public"]["Enums"]["treatment_type"]
+          units_per_box?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treatment_adherence_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "treatment_adherence_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -663,6 +765,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      adherence_status: "sufficient" | "warning" | "critical" | "depleted"
+      authorization_profile: "fast" | "medium" | "slow"
       cost_savings_status:
         | "en_evaluacion"
         | "intervenido"
@@ -681,6 +785,7 @@ export type Database = {
         | "intervention"
         | "note"
         | "completed"
+      treatment_type: "prolonged" | "finish"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -808,6 +913,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      adherence_status: ["sufficient", "warning", "critical", "depleted"],
+      authorization_profile: ["fast", "medium", "slow"],
       cost_savings_status: [
         "en_evaluacion",
         "intervenido",
@@ -829,6 +936,7 @@ export const Constants = {
         "note",
         "completed",
       ],
+      treatment_type: ["prolonged", "finish"],
     },
   },
 } as const

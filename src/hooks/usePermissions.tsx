@@ -40,6 +40,11 @@ interface PermissionsData {
   // Doctors
   canViewDoctors: boolean;
   canManageDoctors: boolean;
+  
+  // Adherence
+  canViewAdherence: boolean;
+  canCreateAdherence: boolean;
+  canEditAdherence: boolean;
 }
 
 export const usePermissions = (): PermissionsData & { role: UserRole | null; isLoading: boolean } => {
@@ -74,6 +79,9 @@ export const usePermissions = (): PermissionsData & { role: UserRole | null; isL
       canManageConfiguration: true,
       canViewDoctors: true,
       canManageDoctors: true,
+      canViewAdherence: true,
+      canCreateAdherence: true,
+      canEditAdherence: true,
     };
   }
 
@@ -120,5 +128,10 @@ export const usePermissions = (): PermissionsData & { role: UserRole | null; isL
     // Doctors permissions
     canViewDoctors: isGestor,
     canManageDoctors: false,
+    
+    // Adherence permissions
+    canViewAdherence: !isPaciente,
+    canCreateAdherence: isMedico || isMedicoEvaluador,
+    canEditAdherence: isMedico || isMedicoEvaluador,
   };
 };

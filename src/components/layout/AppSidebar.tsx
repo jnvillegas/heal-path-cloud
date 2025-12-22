@@ -7,9 +7,8 @@ import {
   FileText,
   Pill,
   TrendingDown,
-  Settings,
   Bell,
-  HelpCircle,
+  HeartPulse,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -49,6 +48,7 @@ const navigationSections = [
     section: "Costo-Ahorratividad",
     items: [
       { name: "Casos de Ahorro", href: "/cost-savings", icon: TrendingDown, roles: ['medico', 'medico_evaluador', 'gestor', 'administrador'] },
+      { name: "Adherencia", href: "/adherence", icon: HeartPulse, roles: ['medico', 'medico_evaluador', 'gestor', 'administrador'] },
     ],
   },
   {
