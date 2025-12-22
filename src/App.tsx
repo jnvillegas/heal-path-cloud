@@ -17,6 +17,7 @@ import CostSavingsCaseDetail from "./pages/CostSavingsCaseDetail";
 import Reports from "./pages/Reports";
 import ExecutiveReports from "./pages/ExecutiveReports";
 import Notifications from "./pages/Notifications";
+import Adherence from "./pages/Adherence";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 
@@ -142,7 +143,16 @@ const App = () => (
               </ProtectedRoute>
             } 
           />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route 
+            path="/adherence"
+            element={
+              <ProtectedRoute allowedRoles={['medico', 'medico_evaluador', 'gestor', 'administrador']}>
+                <AppLayout>
+                  <Adherence />
+                </AppLayout>
+              </ProtectedRoute>
+            } 
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
