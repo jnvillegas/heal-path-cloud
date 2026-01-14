@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileText, Plus, User } from "lucide-react";
+import { FileText, Plus, User, Pill, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+
+interface Medication {
+  name: string;
+  dose: string;
+  frequency: string;
+}
 
 interface MedicalRecord {
   id: string;
@@ -51,6 +58,21 @@ export default function MedicalRecords() {
     lab_orders: "",
     follow_up: "",
   });
+  const [medications, setMedications] = useState<Medication[]>([]);
+  const [newMedication, setNewMedication] = useState<Medication>({ name: "", dose: "", frequency: "" });
+
+  const addMedication = () => {
+    if (!newMedication.name.trim()) {
+      toast.error("Ingrese el nombre del medicamento");
+      return;
+    }
+    setMedications([...medications, newMedication]);
+    setNewMedication({ name: "", dose: "", frequency: "" });
+  };
+
+  const removeMedication = (index: number) => {
+    setMedications(medications.filter((_, i) => i !== index));
+  };
 
   useEffect(() => {
     loadRecords();
@@ -112,7 +134,7 @@ export default function MedicalRecords() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuario no autenticado");
 
-      const { error } = await supabase.from("medical_records").insert({
+      const { error } = await supabase.from("medical_records").insert([{
         patient_id: formData.patient_id,
         visit_date: formData.visit_date,
         diagnosis: formData.diagnosis || null,
@@ -123,7 +145,8 @@ export default function MedicalRecords() {
         lab_orders: formData.lab_orders || null,
         follow_up: formData.follow_up || null,
         doctor_id: user.id,
-      });
+        attachments: medications.length > 0 ? { medications: medications as unknown as Json[] } as Json : null,
+      }]);
 
       if (error) throw error;
 
@@ -140,6 +163,7 @@ export default function MedicalRecords() {
         lab_orders: "",
         follow_up: "",
       });
+      setMedications([]);
       loadRecords();
     } catch (error: any) {
       toast.error(error.message || "Error al crear historia clínica");
@@ -249,6 +273,79 @@ export default function MedicalRecords() {
                     />
                   </div>
                 </div>
+
+                {/* Medications Section */}
+                <div className="space-y-4 border-t pt-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Pill className="w-5 h-5 text-primary" />
+                      <Label className="text-base font-semibold">Medicamentos Actuales</Label>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={addMedication}
+                      className="text-primary hover:text-primary/80"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Añadir Medicamento
+                    </Button>
+                  </div>
+
+                  {/* Add new medication form */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <Input
+                      placeholder="Nombre del medicamento"
+                      value={newMedication.name}
+                      onChange={(e) => setNewMedication({ ...newMedication, name: e.target.value })}
+                    />
+                    <Input
+                      placeholder="Dosis (ej: 2.5 mg)"
+                      value={newMedication.dose}
+                      onChange={(e) => setNewMedication({ ...newMedication, dose: e.target.value })}
+                    />
+                    <Input
+                      placeholder="Frecuencia (ej: 1 tableta diaria)"
+                      value={newMedication.frequency}
+                      onChange={(e) => setNewMedication({ ...newMedication, frequency: e.target.value })}
+                    />
+                  </div>
+
+                  {/* List of medications */}
+                  {medications.length > 0 && (
+                    <div className="space-y-2">
+                      {medications.map((med, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-secondary/5 rounded-lg border"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Pill className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-medium">{med.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {med.dose}{med.dose && med.frequency && " - "}{med.frequency}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeMedication(index)}
+                            className="text-destructive hover:text-destructive/80"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                     Cancelar
