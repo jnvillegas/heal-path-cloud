@@ -317,7 +317,11 @@ export type Database = {
           doctor_id: string
           follow_up: string | null
           id: string
+          initial_cost: number | null
+          initial_projected_period: number | null
           lab_orders: string | null
+          monthly_cost: number | null
+          monthly_quantity: number | null
           patient_id: string
           physical_exam: string | null
           prescriptions: string | null
@@ -335,7 +339,11 @@ export type Database = {
           doctor_id: string
           follow_up?: string | null
           id?: string
+          initial_cost?: number | null
+          initial_projected_period?: number | null
           lab_orders?: string | null
+          monthly_cost?: number | null
+          monthly_quantity?: number | null
           patient_id: string
           physical_exam?: string | null
           prescriptions?: string | null
@@ -353,7 +361,11 @@ export type Database = {
           doctor_id?: string
           follow_up?: string | null
           id?: string
+          initial_cost?: number | null
+          initial_projected_period?: number | null
           lab_orders?: string | null
+          monthly_cost?: number | null
+          monthly_quantity?: number | null
           patient_id?: string
           physical_exam?: string | null
           prescriptions?: string | null
