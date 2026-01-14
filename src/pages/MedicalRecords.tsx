@@ -13,9 +13,11 @@ import { Textarea } from "@/components/ui/textarea";
 interface MedicalRecord {
   id: string;
   visit_date: string;
-  chief_complaint: string | null;
   diagnosis: string | null;
-  treatment_plan: string | null;
+  monthly_quantity: number | null;
+  monthly_cost: number | null;
+  initial_projected_period: number | null;
+  initial_cost: number | null;
   patients: {
     first_name: string;
     last_name: string;
@@ -41,12 +43,11 @@ export default function MedicalRecords() {
   const [formData, setFormData] = useState({
     patient_id: "",
     visit_date: new Date().toISOString().split('T')[0],
-    chief_complaint: "",
-    present_illness: "",
-    physical_exam: "",
     diagnosis: "",
-    treatment_plan: "",
-    prescriptions: "",
+    monthly_quantity: "",
+    monthly_cost: "",
+    initial_projected_period: "",
+    initial_cost: "",
     lab_orders: "",
     follow_up: "",
   });
@@ -112,7 +113,15 @@ export default function MedicalRecords() {
       if (!user) throw new Error("Usuario no autenticado");
 
       const { error } = await supabase.from("medical_records").insert({
-        ...formData,
+        patient_id: formData.patient_id,
+        visit_date: formData.visit_date,
+        diagnosis: formData.diagnosis || null,
+        monthly_quantity: formData.monthly_quantity ? parseFloat(formData.monthly_quantity) : null,
+        monthly_cost: formData.monthly_cost ? parseFloat(formData.monthly_cost) : null,
+        initial_projected_period: formData.initial_projected_period ? parseInt(formData.initial_projected_period) : null,
+        initial_cost: formData.initial_cost ? parseFloat(formData.initial_cost) : null,
+        lab_orders: formData.lab_orders || null,
+        follow_up: formData.follow_up || null,
         doctor_id: user.id,
       });
 
@@ -123,12 +132,11 @@ export default function MedicalRecords() {
       setFormData({
         patient_id: "",
         visit_date: new Date().toISOString().split('T')[0],
-        chief_complaint: "",
-        present_illness: "",
-        physical_exam: "",
         diagnosis: "",
-        treatment_plan: "",
-        prescriptions: "",
+        monthly_quantity: "",
+        monthly_cost: "",
+        initial_projected_period: "",
+        initial_cost: "",
         lab_orders: "",
         follow_up: "",
       });
@@ -193,30 +201,6 @@ export default function MedicalRecords() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Motivo de Consulta</Label>
-                  <Textarea
-                    value={formData.chief_complaint}
-                    onChange={(e) => setFormData({ ...formData, chief_complaint: e.target.value })}
-                    placeholder="Motivo principal de la consulta..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Enfermedad Actual</Label>
-                  <Textarea
-                    value={formData.present_illness}
-                    onChange={(e) => setFormData({ ...formData, present_illness: e.target.value })}
-                    placeholder="Descripción detallada de la enfermedad actual..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Examen Físico</Label>
-                  <Textarea
-                    value={formData.physical_exam}
-                    onChange={(e) => setFormData({ ...formData, physical_exam: e.target.value })}
-                    placeholder="Hallazgos del examen físico..."
-                  />
-                </div>
-                <div className="space-y-2">
                   <Label>Diagnóstico</Label>
                   <Textarea
                     value={formData.diagnosis}
@@ -224,21 +208,46 @@ export default function MedicalRecords() {
                     placeholder="Diagnóstico médico..."
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Plan de Tratamiento</Label>
-                  <Textarea
-                    value={formData.treatment_plan}
-                    onChange={(e) => setFormData({ ...formData, treatment_plan: e.target.value })}
-                    placeholder="Tratamiento recomendado..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Recetas/Prescripciones</Label>
-                  <Textarea
-                    value={formData.prescriptions}
-                    onChange={(e) => setFormData({ ...formData, prescriptions: e.target.value })}
-                    placeholder="Medicación prescrita..."
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Cantidad Mensual</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={formData.monthly_quantity}
+                      onChange={(e) => setFormData({ ...formData, monthly_quantity: e.target.value })}
+                      placeholder="Ej: 30"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Costo Mensual ($)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={formData.monthly_cost}
+                      onChange={(e) => setFormData({ ...formData, monthly_cost: e.target.value })}
+                      placeholder="Ej: 15000"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Período Inicial Proyectado (meses)</Label>
+                    <Input
+                      type="number"
+                      value={formData.initial_projected_period}
+                      onChange={(e) => setFormData({ ...formData, initial_projected_period: e.target.value })}
+                      placeholder="Ej: 12"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Costo Inicial ($)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={formData.initial_cost}
+                      onChange={(e) => setFormData({ ...formData, initial_cost: e.target.value })}
+                      placeholder="Ej: 180000"
+                    />
+                  </div>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
@@ -291,24 +300,30 @@ export default function MedicalRecords() {
                         </p>
                       </div>
                     </div>
-                    {record.chief_complaint && (
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Motivo de Consulta:</p>
-                        <p className="text-sm mt-1">{record.chief_complaint}</p>
-                      </div>
-                    )}
                     {record.diagnosis && (
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Diagnóstico:</p>
                         <p className="text-sm mt-1">{record.diagnosis}</p>
                       </div>
                     )}
-                    {record.treatment_plan && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 border-t">
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">Plan de Tratamiento:</p>
-                        <p className="text-sm mt-1">{record.treatment_plan}</p>
+                        <p className="text-xs font-medium text-muted-foreground">Cantidad Mensual</p>
+                        <p className="text-sm font-semibold">{record.monthly_quantity ?? '-'}</p>
                       </div>
-                    )}
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground">Costo Mensual</p>
+                        <p className="text-sm font-semibold">{record.monthly_cost ? `$${record.monthly_cost.toLocaleString()}` : '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground">Período Proyectado</p>
+                        <p className="text-sm font-semibold">{record.initial_projected_period ? `${record.initial_projected_period} meses` : '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground">Costo Inicial</p>
+                        <p className="text-sm font-semibold">{record.initial_cost ? `$${record.initial_cost.toLocaleString()}` : '-'}</p>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
